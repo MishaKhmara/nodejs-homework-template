@@ -31,16 +31,16 @@ const getContactById = async (contactId) => {
   }
 };
 
-// const removeContact = async (contactId) => {
-//   try {
-//     const contacts = await listContacts();
-//     const newData = contacts.filter(({ id }) => id.toString() !== contactId);
-//     const dataString = JSON.stringify(newData);
-//    await fs.writeFile(contactsPath, dataString);
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+const removeContact = async (contactId) => {
+  try {
+    const contacts = await listContacts();
+    const newData = contacts.filter(({ id }) => id.toString() !== contactId);
+    const dataString = JSON.stringify(newData);
+    await fs.writeFile(contactsPath, dataString);
+  } catch (error) {
+    throw error;
+  }
+};
 
 const addContact = async (body) => {
   try {

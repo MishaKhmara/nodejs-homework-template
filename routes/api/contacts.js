@@ -70,8 +70,10 @@ router.post("/", async (req, res, next) => {
 
 router.delete("/:contactId", async (req, res, next) => {
   try {
-    const contact = await Contacts.removeContact(req.params.contactId);
+    const contact = await Contacts.getContactById(req.params.contactId);
+
     if (contact) {
+      Contacts.removeContact(req.params.contactId);
       return res.json({
         status: "Success",
         code: 200,
@@ -92,48 +94,18 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-// router.delete("/:contactId", async (req, res, next) => {
-//   const contact = await req.params.contactId;
-
-//   if (contact) {
-//     Contacts.removeContact(contact);
-//     return res.json({
-//       status: "Success",
-//       code: 200,
-//       message: "contact deleted",
-//       data: {
-//         contact,
-//       },
-//     });
-//   } else {
-//     return res.status(404).json({
-//       status: "Error",
-//       code: 404,
-//       message: "Not Found",
-//     });
-//   }
-// });
-
-router.patch("/:contactId", async (req, res, next) => {
+router.put("/:contactId", async (req, res, next) => {
   try {
-    if (Object.keys(req.body).length === 0) {
-      return res.status(400).json({
-        status: "Error",
-        code: 400,
-        message: "Bad request",
-      });
-    }
-    const contact = await Contacts.updateContact(
-      req.params.contactId,
-      req.body
-    );
+    const contact = await Contacts.getContactById(req.params.contactId);
+
     if (contact) {
+      Contacts.updateContact(req.params.contactId, req.body);
       return res.json({
         status: "Success",
         code: 200,
         message: "Contact updated successfully",
         data: {
-          contacts,
+          contact,
         },
       });
     } else {
