@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Contacts = require("../../model/index");
+const validate = require("../../service/validation");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -42,9 +43,9 @@ router.get("/:contactId", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", validate.createContact, async (req, res, next) => {
   const newContact = await req.body;
-  console.log(newContact);
+
   try {
     if (!newContact.name || !newContact.email || !newContact.phone) {
       return res.status(400).json({
@@ -53,14 +54,13 @@ router.post("/", async (req, res, next) => {
         message: "missing required name field.",
       });
     }
-
-    const contact = await Contacts.addContact(req.body);
+    await Contacts.addContact(req.body);
     res.status(201).json({
       status: "Success",
       code: 201,
       message: "Contact successfully created",
       data: {
-        result: contacts,
+        newContact,
       },
     });
   } catch (e) {
@@ -94,7 +94,7 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+router.put("/:contactId", validate.updateContact, async (req, res, next) => {
   try {
     const contact = await Contacts.getContactById(req.params.contactId);
 
