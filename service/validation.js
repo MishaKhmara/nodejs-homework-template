@@ -16,6 +16,10 @@ const SchemaUpdateContact = Joi.object({
     .optional(),
 }).min(1);
 
+const SchemaUpdateContactSatus = Joi.object({
+  isfavorite: Joi.boolean().required(),
+});
+
 const validate = (schema, body, next) => {
   const { error } = schema.validate(body);
   if (error) {
@@ -35,4 +39,7 @@ module.exports.createContact = (req, _res, next) => {
 
 module.exports.updateContact = (req, _res, next) => {
   return validate(SchemaUpdateContact, req.body, next);
+};
+module.exports.updateContactStatus = (req, _res, next) => {
+  return validate(SchemaUpdateContactSatus, req.body, next);
 };
