@@ -1,4 +1,4 @@
-const Contact = require("../service/schemas/index");
+const Contact = require("../model/schemas/ContactsSchema");
 
 const listContacts = async (query) => {
   const data = await Contact.find(query);
@@ -36,7 +36,7 @@ const updateStatusContact = async (contactId, body) => {
     { new: true }
   );
 
-  console.log(data);
+  
 
   return data;
 };

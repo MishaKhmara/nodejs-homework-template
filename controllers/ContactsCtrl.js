@@ -1,5 +1,5 @@
-// const Contact = require("../service/schemas");
-const Contacts = require("../model/contacts");
+
+const Contacts = require("../model/schemas/ContactsSchema");
 
 const listContacts = async (_req, res, next) => {
   try {
