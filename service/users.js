@@ -1,21 +1,32 @@
 const User = require("../model/schemas/UserSchema");
 
 const getOne =(filter) => {
+    
     return User.findOne(filter);
 };
 
 const getById = (id) => {
+  
     return User.findById(id);
 }
 
-const add = ({email, password}) => {
-const newUser = new User({email});
-newUser.setPassword(password);
-return newUser.save();
+const add = async ({email, password}) => {
+    const user = new User({ email, password });
+    return await user.save();
 };
+
+const update = async (id, token) => {
+  
+ return await  User.updateOne({ _id: id }, { token });
+  }
+
+
 
 module.exports = {
     getOne,
     add,
-    getById
+    getById,
+    update,
+
+    
 };

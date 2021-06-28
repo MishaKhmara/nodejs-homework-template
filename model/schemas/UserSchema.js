@@ -1,38 +1,48 @@
-const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
-const bcrypt = require("bcryptjs");
+const { Schema, model } = require('mongoose');
+const bcrypt = require('bcryptjs');
+const SALT_WORK_FACTOR = 8;
 
-const userSchema = new Schema({
-    
-        password: {
-          type: String,
-          required: [true, 'Password is required'],
-        },
-        email: {
-          type: String,
-          required: [true, 'Email is required'],
-          unique: true,
-        },
-        subscription: {
-          type: String,
-          enum: ["starter", "pro", "business"],
-          default: "starter"
-        },
-        token: {
-          type: String,
-          default: null,
-        },
-      
+const userSchema = new Schema(
+  {
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      validate: {
+        validator: (v) => /\S+@\S+\.\S+/.test(v),
+        message: (props) => `${props.value} is not a valid email!`,
+      },
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+    },
+    subscription: {
+      type: String,
+      enum: ['free', 'starter', 'pro', 'premium'],
+      default: 'free',
+    },
+    token: {
+      type: String,
+      default: null,
+    },
+  },
+  { versionKey: false },
+);
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-userSchema.methods.setPassword = function(password) {
-  this.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-}
+userSchema.methods.validPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
-userSchema.methods.validPassword = (password) => {
-  return bcrypt.compareSync(password, this.password);
-}
-
-const User = model("user", userSchema);
+const User = model('user', userSchema);
 
 module.exports = User;

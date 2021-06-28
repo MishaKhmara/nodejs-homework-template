@@ -7,6 +7,7 @@ const usersRouter = require("./routes/api/users");
 
 
 const app = express();
+require("./configs/configPassport");
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
@@ -15,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // app.use('/api/', createAccountLimiter);
-// app.use('/api/users', usersRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res) => {
