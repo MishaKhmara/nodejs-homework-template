@@ -15,7 +15,7 @@ const add = async ({ email, password }) => {
   const user = await new User({
     email,
     password,
-    verification: false,
+    verify: true,
     verifyToken,
   });
   await sendEmail(verifyToken, email);
