@@ -1,5 +1,6 @@
 const users = require('../service/users');
 const jwt = require('jsonwebtoken');
+
 require('dotenv').config();
 
 const register = async (req, res, next) => {
@@ -14,7 +15,10 @@ const register = async (req, res, next) => {
       });
     }
 
-    const data = await users.add({ email, password });
+    const data = await users.add({
+      email,
+      password,
+    });
     const { TOKEN_KEY } = process.env;
     const payload = {
       id: data._id,
@@ -38,7 +42,7 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await users.getOne({ email });
 
-    if (!user || !user.validPassword(password)) {
+    if (!user || !user.validPassword(password) || !user.verify) {
       return res.status(400).json({
         status: 'error',
         code: 400,
@@ -102,9 +106,32 @@ const currentUser = async (req, res, next) => {
   }
 };
 
+const verify = async (req, res, next) => {
+  try {
+    const user = await users.findByVerificationToken(
+      req.params.verificationToken,
+    );
+    if (!user) {
+      return next({
+        status: 404,
+        message: 'User not found',
+      });
+    }
+    await users.updateVerificationToken(user.id, true, null);
+    return res.json({
+      status: 'success',
+      code: 200,
+      message: 'Verification successful',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   currentUser,
+  verify,
 };
